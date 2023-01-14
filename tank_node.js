@@ -2,7 +2,7 @@ const http = require('http');
 const qs = require('querystring');
 const mover = require('./move.js');
 
-const hostname = '127.0.0.1';
+const hostname = '0.0.0.0';
 const port = 3000;
 
 const server = http.createServer((req, res) => {
@@ -13,6 +13,10 @@ const server = http.createServer((req, res) => {
         mover.moveTank("forward");
     } else if (req.url.match(/move\/backward$/)) {
         mover.moveTank("backward");
+    } else if (req.url.match(/move\/left$/)) {
+        mover.moveTank("left");
+    } else if (req.url.match(/move\/right$/)) {
+        mover.moveTank("right");
     }
     if (req.method == "GET") {
         res.setHeader('Content-Type', 'text/html');

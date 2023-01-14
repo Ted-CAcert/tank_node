@@ -12,19 +12,34 @@ let inMove=0;
 
 exports.moveTank=function (dir, range, speed)  {
     var PWMVal;
+    var DefTimeout;
 
     if (inMove) return;
 
     if (dir == "forward") {
         pinA1.digitalWrite(1);
         pinA2.digitalWrite(0);
+        pinB1.digitalWrite(0);
+        pinB2.digitalWrite(1);
+        DefTimeout = 1300;
+    } else if (dir == "backward") {
+        pinA1.digitalWrite(0);
+        pinA2.digitalWrite(1);
         pinB1.digitalWrite(1);
         pinB2.digitalWrite(0);
-    } else if (dir == "backward") {
+        DefTimeout = 1300;
+    } else if (dir == "left") {
         pinA1.digitalWrite(0);
         pinA2.digitalWrite(1);
         pinB1.digitalWrite(0);
         pinB2.digitalWrite(1);
+        DefTimeout = 300;
+    } else if (dir == "right") {
+        pinA1.digitalWrite(1);
+        pinA2.digitalWrite(0);
+        pinB1.digitalWrite(1);
+        pinB2.digitalWrite(0);
+        DefTimeout = 300;
     } else {
         console.log("move.js: unknown direction "+dir);
         return;
@@ -38,12 +53,16 @@ exports.moveTank=function (dir, range, speed)  {
     } else {
         PWMVal = 255;
     }
+    console.log("PWMVal: "+PWMVal);
+
     pinA_EN.analogWrite(PWMVal);
     pinB_EN.analogWrite(PWMVal);
 
-    if (range < 100 || range > 10000) {
-        setTimeout(stopMovement, 1300);
+    if (!range || range < 100 || range > 10000) {
+	console.log("Default timeout "+DefTimeout);
+        setTimeout(stopMovement, DefTimeout);
     } else {
+	console.log("Timeout: "+range);
         setTimeout(stopMovement, range);
     }
 }
