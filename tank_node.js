@@ -2,6 +2,7 @@ const http = require('http');
 const qs = require('querystring');
 //const mover = require('./dummy.js');
 const mover = require('./move.js');
+const lights = require('./lights.js');
 
 const hostname = '0.0.0.0';
 const port = 3000;
@@ -23,6 +24,10 @@ const server = http.createServer((req, res) => {
         mover.moveTank("left", params.range, params.speed);
     } else if (url.match(/move\/right$/)) {
         mover.moveTank("right", params.range, params.speed);
+    } else if (url.match(/lights\/on$/)) {
+        lights.set(1);
+    } else if (url.match(/lights\/off$/)) {
+        lights.set(0);
     }
     if (req.method == "GET") {
         res.setHeader('Content-Type', 'text/html');
