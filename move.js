@@ -1,4 +1,5 @@
 const Gpio = require('pigpio').Gpio;
+const cam = require('./mycam.js');
 
 var pinA1 = new Gpio(14, {mode: Gpio.OUTPUT});
 var pinA2 = new Gpio(15, {mode: Gpio.OUTPUT});
@@ -68,6 +69,7 @@ exports.moveTank=function (dir, range, speed)  {
     }
 }
 
+
 function stopMovement() {
     inMove = 0;
     pinA1.digitalWrite(0);
@@ -76,4 +78,6 @@ function stopMovement() {
     pinB2.digitalWrite(0);
     pinA_EN.digitalWrite(0);
     pinB_EN.digitalWrite(0);
+
+    cam.snap();
 }
