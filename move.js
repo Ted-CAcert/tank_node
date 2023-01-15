@@ -47,7 +47,7 @@ exports.moveTank=function (dir, range, speed)  {
 
     inMove = 1;
     if (speed) {
-        PWMVal = 100+155*100/speed;
+        PWMVal = 100+155*speed/100;
         if (PWMVal < 100) PWMVal = 100;
         if (PWMVal > 255) PWMVal = 255;
     } else {
