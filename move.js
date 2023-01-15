@@ -48,6 +48,7 @@ exports.moveTank=function (dir, range, speed)  {
     inMove = 1;
     if (speed) {
         PWMVal = 100+155*speed/100;
+        PMVal = PMVal.toFixed();
         if (PWMVal < 100) PWMVal = 100;
         if (PWMVal > 255) PWMVal = 255;
     } else {
@@ -59,10 +60,10 @@ exports.moveTank=function (dir, range, speed)  {
     pinB_EN.analogWrite(PWMVal);
 
     if (!range || range < 100 || range > 10000) {
-	console.log("Default timeout "+DefTimeout);
+        console.log("Default timeout "+DefTimeout);
         setTimeout(stopMovement, DefTimeout);
     } else {
-	console.log("Timeout: "+range);
+        console.log("Timeout: "+range);
         setTimeout(stopMovement, range);
     }
 }
