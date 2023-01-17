@@ -10,12 +10,15 @@ var pinB2 = new Gpio(18, {mode: Gpio.OUTPUT});
 var pinB_EN = new Gpio(17, {mode: Gpio.OUTPUT});
 
 let inMove=0;
+let cbStopMove=0;
 
 exports.moveTank=function (dir, range, speed)  {
     var PWMVal;
     var DefTimeout;
 
-    if (inMove) return;
+    if (cbStopMove) {
+        clearTimeout(cbStopMove);
+    }
 
     if (dir == "forward") {
         pinA1.digitalWrite(1);
@@ -50,7 +53,7 @@ exports.moveTank=function (dir, range, speed)  {
     if (speed) {
         PWMVal = 75+180*(speed-1)/100;
         PWMVal = PWMVal.toFixed();
-        if (PWMVal < 100) PWMVal = 100;
+        if (PWMVal < 0) PWMVal = 0;
         if (PWMVal > 255) PWMVal = 255;
     } else {
         PWMVal = 255;
@@ -72,6 +75,7 @@ exports.moveTank=function (dir, range, speed)  {
 
 function stopMovement() {
     inMove = 0;
+    cbStopMove = 0;
     pinA1.digitalWrite(0);
     pinA2.digitalWrite(0);
     pinB1.digitalWrite(0);
