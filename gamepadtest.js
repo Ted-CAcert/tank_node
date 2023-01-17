@@ -128,7 +128,7 @@ function setTankSpeed(val) {
     CurSpeed = 100*val/2;
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/move/forward?range=200&speed="+CurSpeed.toFixed());
+    xhttp.open("GET", "http://rasptank01:3000/move/forward?range=400&speed="+CurSpeed.toFixed());
     xhttp.send();
   }
 }

@@ -9,7 +9,7 @@ var pinB1 = new Gpio(27, {mode: Gpio.OUTPUT});
 var pinB2 = new Gpio(18, {mode: Gpio.OUTPUT});
 var pinB_EN = new Gpio(17, {mode: Gpio.OUTPUT});
 
-let inMove=0;
+let inMove;
 let cbStopMove=0;
 
 exports.moveTank=function (dir, range, speed)  {
@@ -18,6 +18,7 @@ exports.moveTank=function (dir, range, speed)  {
 
     if (cbStopMove) {
         clearTimeout(cbStopMove);
+        cbStopMove=0;
     }
 
     if (dir == "forward") {
@@ -49,7 +50,7 @@ exports.moveTank=function (dir, range, speed)  {
         return;
     }
 
-    inMove = 1;
+    inMove = dir;
     if (speed) {
         PWMVal = 75+180*(speed-1)/100;
         PWMVal = PWMVal.toFixed();
@@ -65,16 +66,16 @@ exports.moveTank=function (dir, range, speed)  {
 
     if (!range || range < 100 || range > 10000) {
         console.log("Default timeout "+DefTimeout);
-        setTimeout(stopMovement, DefTimeout);
+        cbStopMove = setTimeout(stopMovement, DefTimeout);
     } else {
         console.log("Timeout: "+range);
-        setTimeout(stopMovement, range);
+        cbStopMove = setTimeout(stopMovement, range);
     }
 }
 
 
 function stopMovement() {
-    inMove = 0;
+    inMove = undefined;
     cbStopMove = 0;
     pinA1.digitalWrite(0);
     pinA2.digitalWrite(0);
