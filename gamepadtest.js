@@ -104,6 +104,9 @@ function updateStatus() {
         val++;
         setTankSpeed(val);
       }
+      if (i == 0 && val) {
+        setTankRot(val);
+      }
     }
   }
   setTimeout(updateStatus, 200);
@@ -128,7 +131,29 @@ function setTankSpeed(val) {
     CurSpeed = 100*val/2;
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/move/forward?range=400&speed="+CurSpeed.toFixed());
+    xhttp.open("GET", "http://rasptank01:3000/move/forward?range=250&speed="+CurSpeed.toFixed());
+    xhttp.send();
+  }
+}
+
+var LastRot;
+function setTankRot(val) {
+  var CurSpeed;
+  var Direction;
+  
+  if (val > -0.3 && val < 0.3) {
+    CurSpeed = 0;
+  } else {
+    if (val < 0) {
+      Direction="left";
+      CurSpeed=-50*(val+0.3)/0.7;
+    } else {
+      Direction="right";
+      CurSpeed=50*(val-0.3)/0.7;
+    }
+
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "http://rasptank01:3000/move/"+Direction+"?range=250&speed="+CurSpeed.toFixed());
     xhttp.send();
   }
 }
