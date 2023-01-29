@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "i2c-bus": "^5.2.2",
     "pigpio": "^3.3.1",
     "rpi-ws281x-native": "^1.0.4"
   }
