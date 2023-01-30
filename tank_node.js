@@ -3,6 +3,7 @@ const qs = require('querystring');
 //const mover = require('./dummy.js');
 const mover = require('./move.js');
 const lights = require('./lights.js');
+const servo = require('./servo.js');
 
 const hostname = '0.0.0.0';
 const port = 3000;
@@ -51,6 +52,12 @@ const server = http.createServer((req, res) => {
         }
     } else if (url.match(/lights\/off$/)) {
         lights.off();
+    } else if (url.match(/servo\/camera\/down$/)) {
+        servo.setCameraTilt(0);
+    } else if (url.match(/servo\/camera\/up$/)) {
+        servo.setCameraTilt(100);
+    } else if (url.match(/servo\/camera$/)) {
+      servo.setCameraTilt(params.tilt);
     }
     if (req.method == "GET") {
         res.setHeader('Content-Type', 'text/html');

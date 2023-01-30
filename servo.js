@@ -9,10 +9,16 @@
 */ 
 
 const i2c = require('i2c-bus');
+const cam = require('./mycam.js');
 
 var i2cAddr  = 0x40; // I2C address of the PCA9685 in the raspi tank
-const CHANNEL_CAMMERA = 11; // Servo used to 
+var busNo = 1; // 1 is the bus number of the I2C bus on the raspi tank
 
+/* For servo control you'll usually set onValue to 0.
+   offValue takes values from 0 to 4095 (0x3FF), but your servos may not accept
+   the full scale. Some experimenting may be needed to find sensible lower and
+   upper bounds...
+*/
 function set_pwm(chan, onValue, offValue) {
     var buf;
 
@@ -29,7 +35,7 @@ function set_pwm(chan, onValue, offValue) {
     if (onValue == undefined) onValue=0;
     if (offValue == undefined) offValue = onValue;
 
-    const i2c1 = i2c.openSync(1); // 1 is the bus number of the I2C bus on the raspi tank
+    const i2c1 = i2c.openSync(busNo); 
 
     // Make sure MODE1 register is sensible. Important flags:
     // AI (Bit 5) is on, this code relies on it
@@ -51,8 +57,81 @@ function set_pwm(chan, onValue, offValue) {
     i2c1.closeSync();
 }
 
-// Camera panel:
-// Ruhezustand: 0x12b
-// ganz oben: 0x0C0
-// ganz unten: 0x14B
+function get_pwm(chan) {
+    var res;
+    var buf;
 
+    if (chan < 0 || chan > 15) {
+        // OK, there are probably more sensible ways in Node to do this...
+        return;
+    }
+
+    const i2c1 = i2c.openSync(busNo); 
+
+    // Make sure MODE1 register is sensible. Important flags:
+    // AI (Bit 5) is on, this code relies on it
+    // SLEEP (Bit 4) is off, otherwise the chip won't control anything
+    // Other bits use default setting from the data sheet.
+    buf = Buffer.from([0x00, 0x21]); // First the register#, then the value(s)
+    i2c1.i2cWriteSync(i2cAddr, 2, buf);
+
+    // Each channel has 4 byte registers starting at register#6
+    var registerNo = 6+4*chan; 
+
+    buf = Buffer.alloc(4);
+    i2c1.i2cReadSync(registerNo, 4, buf);
+    res.onValue = buf.readInt16LE(0);
+    res.offValue = buf.readInt16LE(2);
+
+    i2c1.closeSync();
+
+    return res;
+}
+
+
+
+// My camera panel
+// Lower position: 0x140
+// Upper position: 0x0C0
+const CHANNEL_CAMMERA = 11; // Servo used to tilt camera
+var curCameraVal = 0x140; // Init to lower positon
+var targetCameraVal = 0x140;
+var moveInterval;
+
+/* It's not nice if servos jerk arund, so let's slow them down a bit... */
+function moveFunc() {
+    if (curCameraVal == targetCameraVal) {
+        // We're already there, stop intervall
+    }
+
+    if (abs(targetCameraVal - curCameraVal) <= 0x18) { // Last step may be a bit bigger or smaller
+        curCameraVal = targetCameraVal;
+        if (moveInterval) {
+            clearInterval(moveInterval);
+            moveInterval = undefined;
+        }
+    } else if (curCameraVal < targetCameraVal) {
+        curCameraVal += 0x10;
+    } else {
+        curCameraVal -= 0x10;
+    }
+    set_pwm(CHANNEL_CAMMERA, 0, curCameraVal)
+}
+
+// tiltPos is from 0 (lower pos) to 100 (upper pos)
+exports.setCameraTilt=function (tiltPos)  {
+    if (tiltPos < 0) tiltPos = 0;
+    if (tiltPos > 100) tiltPos = 100;
+
+    targetCameraVal = (0x140 - (0x70*100/tiltPos));
+    if (!moveInterval) {
+        // Increase delay to reduce speed
+        // Sending a new position over I2C may need up to 1 ms if standard
+        // mode is used for I2C, so very low delay values may have unexpected
+        // results
+        setInterval(moveFunc, 50);
+    }
+}
+
+/* init */
+set_pwm(CHANNEL_CAMMERA, 0, curCameraVal);
