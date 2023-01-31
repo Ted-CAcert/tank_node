@@ -51,14 +51,14 @@ function set_pwm(chan, onValue, offValue) {
     buf.writeUInt8(registerNo, 0); // Starting register
     buf.writeUInt16LE(onValue, 1);
     buf.writeUInt16LE(offValue, 3);
-    console.log(buf);
+//    console.log(buf);
     i2c1.i2cWriteSync(i2cAddr, 5, buf);
 
     i2c1.closeSync();
 }
 
 function get_pwm(chan) {
-    var res;
+    var res = {};
     var buf;
 
     if (chan < 0 || chan > 15) {
@@ -78,8 +78,12 @@ function get_pwm(chan) {
     // Each channel has 4 byte registers starting at register#6
     var registerNo = 6+4*chan; 
 
+    buf = Buffer.alloc(1);
+    buf.writeUInt8(registerNo);
+    i2c1.i2cWriteSync(i2cAddr, 1, buf);
+
     buf = Buffer.alloc(4);
-    i2c1.i2cReadSync(registerNo, 4, buf);
+    i2c1.i2cReadSync(i2cAddr, 4, buf);
     res.onValue = buf.readInt16LE(0);
     res.offValue = buf.readInt16LE(2);
 
@@ -93,7 +97,7 @@ function get_pwm(chan) {
 // My camera panel
 // Lower position: 0x140
 // Upper position: 0x0C0
-const CHANNEL_CAMMERA = 11; // Servo used to tilt camera
+const CHANNEL_CAMERA = 11; // Servo used to tilt camera
 var curCameraVal = 0x140; // Init to lower positon
 var targetCameraVal = 0x140;
 var moveInterval;
@@ -103,8 +107,9 @@ function moveFunc() {
     if (curCameraVal == targetCameraVal) {
         // We're already there, stop intervall
     }
+//    console.log("cur: "+curCameraVal+", target: "+targetCameraVal);
 
-    if (abs(targetCameraVal - curCameraVal) <= 0x18) { // Last step may be a bit bigger or smaller
+    if (Math.abs(targetCameraVal - curCameraVal) <= 0x18) { // Last step may be a bit bigger or smaller
         curCameraVal = targetCameraVal;
         if (moveInterval) {
             clearInterval(moveInterval);
@@ -115,7 +120,7 @@ function moveFunc() {
     } else {
         curCameraVal -= 0x10;
     }
-    set_pwm(CHANNEL_CAMMERA, 0, curCameraVal)
+    set_pwm(CHANNEL_CAMERA, 0, curCameraVal)
 }
 
 // tiltPos is from 0 (lower pos) to 100 (upper pos)
@@ -123,15 +128,16 @@ exports.setCameraTilt=function (tiltPos)  {
     if (tiltPos < 0) tiltPos = 0;
     if (tiltPos > 100) tiltPos = 100;
 
-    targetCameraVal = (0x140 - (0x70*100/tiltPos));
+    targetCameraVal = (0x140 - (0x70*tiltPos/100));
     if (!moveInterval) {
         // Increase delay to reduce speed
         // Sending a new position over I2C may need up to 1 ms if standard
         // mode is used for I2C, so very low delay values may have unexpected
         // results
-        setInterval(moveFunc, 50);
+        moveInterval = setInterval(moveFunc, 25);
     }
 }
 
 /* init */
-set_pwm(CHANNEL_CAMMERA, 0, curCameraVal);
+//console.log(get_pwm(CHANNEL_CAMERA));
+set_pwm(CHANNEL_CAMERA, 0, curCameraVal);
