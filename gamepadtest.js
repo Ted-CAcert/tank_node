@@ -73,7 +73,7 @@ function updateStatus() {
         if ('touched' in val) {
           touched = val.touched;
         }
-        val = val.value;
+        val = val.value;;
       }
       var pct = Math.round(val * 100) + "%";
       b.style.backgroundSize = pct + " " + pct;
@@ -82,10 +82,18 @@ function updateStatus() {
         b.className += " pressed";
         if (i == 5) {
           handleKey5(true);
+        } else if (i == 6) {
+          handleKey6(true);
+        } else if (i == 7) {
+          handleKey7(true)
         }
       } else {
         if (i == 5) {
           handleKey5(false);
+        } else if (i == 6) {
+          handleKey6(false);
+        } else if (i == 7) {
+          handleKey7(false)
         }
       }
       if (touched) {
@@ -191,6 +199,37 @@ function handleKey5(key) {
   LastBut5 = false;
   }
 }
+
+var LastBut6;
+function handleKey6(key) {
+  if (key && !LastBut6) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "http://rasptank01:3000/servo/camera/down");
+    xhttp.send();
+    
+    LastBut6 = true;
+    
+  }
+  if (!key) {
+  LastBut6 = false;
+  }
+}
+
+var LastBut7;
+function handleKey7(key) {
+  if (key && !LastBut7) {
+    var xhttp = new XMLHttpRequest();
+    xhttp.open("GET", "http://rasptank01:3000/servo/camera/up");
+    xhttp.send();
+    
+    LastBut7 = true;
+    
+  }
+  if (!key) {
+  LastBut7 = false;
+  }
+}
+
 
 if (haveEvents) {
   window.addEventListener("gamepadconnected", connecthandler);
