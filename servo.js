@@ -109,16 +109,17 @@ function moveFunc() {
     }
 //    console.log("cur: "+curCameraVal+", target: "+targetCameraVal);
 
-    if (Math.abs(targetCameraVal - curCameraVal) <= 0x18) { // Last step may be a bit bigger or smaller
+    if (Math.abs(targetCameraVal - curCameraVal) <= 0x12) { // Last step may be a bit bigger or smaller
         curCameraVal = targetCameraVal;
         if (moveInterval) {
             clearInterval(moveInterval);
             moveInterval = undefined;
+            cam.snap();
         }
     } else if (curCameraVal < targetCameraVal) {
-        curCameraVal += 0x10;
+        curCameraVal += 0x08;
     } else {
-        curCameraVal -= 0x10;
+        curCameraVal -= 0x08;
     }
     set_pwm(CHANNEL_CAMERA, 0, curCameraVal)
 }
