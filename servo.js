@@ -126,12 +126,15 @@ exports.setCameraTilt=function (tiltPos)  {
 }
 
 function init() {
+    const i2c1 = i2c.openSync(busNo); 
+
     // Set PWM frequency to 50Hz, see https://cdn-shop.adafruit.com/datasheets/PCA9685.pdf#page=25
     var prescaleval = 25000000; // 25 MHz internal oscillator frequency
     prescaleval /= 4096; // 12-bit counter
     prescaleval /= 50; // 50 Hz target
     prescaleval--;
     prescaleval = Math.round(prescaleval);
+    console.log("Prescaler value: "+prescaleval);
 
     // Prescaler register can only be written in sleep mode, so go to sleep...
     buf = Buffer.from([0x00]); // MODE1
@@ -140,6 +143,7 @@ function init() {
     buf = Buffer.alloc(1);
     i2c1.i2cReadSync(i2cAddr, 1, buf);
     var oldmode = buf.readUInt8(0);
+    console.log("Old mode 0x"+oldmode.toString(16));
     var newmode = (oldmode & 0x7F) | 0x10;    // sleep
 
     buf = Buffer.from([0x00, newmode]); // Write new mode to MODE1
@@ -148,7 +152,7 @@ function init() {
     buf = Buffer.from([0xFE, prescaleval]); // Write prescaler value to PRE_SCALE register
     i2c1.i2cWriteSync(i2cAddr, 2, buf); 
     
-    oldmode &= 0xF3; // Make sure sleep bit is cleared
+    oldmode &= 0xEF; // Make sure sleep bit is cleared
     // Since we are at it, also set the AI bit we need 
     oldmode |= 0x20;
     buf = Buffer.from([0x00, oldmode]); // Set mode
