@@ -37,13 +37,6 @@ function set_pwm(chan, onValue, offValue) {
 
     const i2c1 = i2c.openSync(busNo); 
 
-    // Make sure MODE1 register is sensible. Important flags:
-    // AI (Bit 5) is on, this code relies on it
-    // SLEEP (Bit 4) is off, otherwise the chip won't control anything
-    // Other bits use default setting from the data sheet.
-    buf = Buffer.from([0x00, 0x21]); // First the register#, then the value(s)
-    i2c1.i2cWriteSync(i2cAddr, 2, buf);
-
     // Each channel has 4 byte registers starting at register#6
     var registerNo = 6+4*chan; 
 
@@ -67,13 +60,6 @@ function get_pwm(chan) {
     }
 
     const i2c1 = i2c.openSync(busNo); 
-
-    // Make sure MODE1 register is sensible. Important flags:
-    // AI (Bit 5) is on, this code relies on it
-    // SLEEP (Bit 4) is off, otherwise the chip won't control anything
-    // Other bits use default setting from the data sheet.
-    buf = Buffer.from([0x00, 0x21]); // First the register#, then the value(s)
-    i2c1.i2cWriteSync(i2cAddr, 2, buf);
 
     // Each channel has 4 byte registers starting at register#6
     var registerNo = 6+4*chan; 
@@ -139,6 +125,37 @@ exports.setCameraTilt=function (tiltPos)  {
     }
 }
 
-/* init */
+function init() {
+    // Set PWM frequency to 50Hz, see https://cdn-shop.adafruit.com/datasheets/PCA9685.pdf#page=25
+    var prescaleval = 25000000; // 25 MHz internal oscillator frequency
+    prescaleval /= 4096; // 12-bit counter
+    prescaleval /= 50; // 50 Hz target
+    prescaleval--;
+    prescaleval = Math.round(prescaleval);
+
+    // Prescaler register can only be written in sleep mode, so go to sleep...
+    buf = Buffer.from([0x00]); // MODE1
+    i2c1.i2cWriteSync(i2cAddr, 1, buf);
+
+    buf = Buffer.alloc(1);
+    i2c1.i2cReadSync(i2cAddr, 1, buf);
+    var oldmode = buf.readUInt8(0);
+    var newmode = (oldmode & 0x7F) | 0x10;    // sleep
+
+    buf = Buffer.from([0x00, newmode]); // Write new mode to MODE1
+    i2c1.i2cWriteSync(i2cAddr, 2, buf); 
+
+    buf = Buffer.from([0xFE, prescaleval]); // Write prescaler value to PRE_SCALE register
+    i2c1.i2cWriteSync(i2cAddr, 2, buf); 
+    
+    oldmode &= 0xF3; // Make sure sleep bit is cleared
+    // Since we are at it, also set the AI bit we need 
+    oldmode |= 0x20;
+    buf = Buffer.from([0x00, oldmode]); // Set mode
+    i2c1.i2cWriteSync(i2cAddr, 2, buf); 
+
+    
+    set_pwm(CHANNEL_CAMERA, 0, curCameraVal);
+}
 //console.log(get_pwm(CHANNEL_CAMERA));
-set_pwm(CHANNEL_CAMERA, 0, curCameraVal);
+init();
