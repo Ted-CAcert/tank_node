@@ -29,7 +29,6 @@ exports.on=function (duration, color) {
         if (lightTimeout) clearTimeout(lightTimeout);
         lightTimeout = setTimeout(this.off, duration*60000, this);
     }
-    cam.snap();
 
     isOn=true;
 }
@@ -64,6 +63,7 @@ function timerBlink(obj) {
         }
         BlinkState=0;
     }
+    isOn=false;
 }
 
-blinkInterval = setInterval(timerBlink, 1000, null);
+blinkInterval = setInterval(timerBlink, 2000, this);

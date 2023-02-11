@@ -1,3 +1,4 @@
+const cam = require("./mycam.js");
 const http = require('http');
 const qs = require('querystring');
 //const mover = require('./dummy.js');
@@ -50,6 +51,7 @@ const server = http.createServer((req, res) => {
         } else {
           lights.on(duration);
         }
+	cam.snap();
     } else if (url.match(/lights\/off$/)) {
         lights.off();
     } else if (url.match(/servo\/camera\/down$/)) {

@@ -1,0 +1,8 @@
+[Unit]
+Description=node based controller for adeept rasptank
+After=network.target
+[Service]
+Type=simple
+ExecStart=/usr/bin/node /home/pi/Development/tank_node/tank_node.js
+[Install]
+WantedBy=multi-user.target
