@@ -120,6 +120,7 @@ function updateStatus() {
       }
     }
   }
+  if (!editAddr) editAddr=document.getElementById("address");
   setTimeout(updateStatus, 200);
 }
 
@@ -132,6 +133,8 @@ function scangamepads() {
   }
 }
 
+var editAddr;
+
 var LastSpeed;
 function setTankSpeed(val) {
   var CurSpeed;
@@ -142,7 +145,7 @@ function setTankSpeed(val) {
     CurSpeed = 100*val/2;
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/move/forward?range=250&speed="+CurSpeed.toFixed());
+    xhttp.open("GET", "http://"+editAddr.value+"/move/forward?range=250&speed="+CurSpeed.toFixed());
     xhttp.send();
   }
 }
@@ -164,7 +167,7 @@ function setTankRot(val) {
     }
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/move/"+Direction+"?range=250&speed="+CurSpeed.toFixed());
+    xhttp.open("GET", "http://"+editAddr.value+"/move/"+Direction+"?range=250&speed="+CurSpeed.toFixed());
     xhttp.send();
   }
 }
@@ -179,7 +182,7 @@ function setTankBack(val) {
     CurSpeed = 50;
 
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/move/backward?range=250&speed="+CurSpeed.toFixed());
+    xhttp.open("GET", "http://"+editAddr.value+"/move/backward?range=250&speed="+CurSpeed.toFixed());
     xhttp.send();
   }
 }
@@ -189,7 +192,7 @@ var LastBut5;
 function handleKey5(key) {
   if (key && !LastBut5) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/lights/on?duration=1");
+    xhttp.open("GET", "http://"+editAddr.value+"/lights/on?duration=1");
     xhttp.send();
     
     LastBut5 = true;
@@ -204,7 +207,7 @@ var LastBut6;
 function handleKey6(key) {
   if (key && !LastBut6) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/servo/camera/down");
+    xhttp.open("GET", "http://"+editAddr.value+"/servo/camera/down");
     xhttp.send();
     
     LastBut6 = true;
@@ -219,7 +222,7 @@ var LastBut7;
 function handleKey7(key) {
   if (key && !LastBut7) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://rasptank01:3000/servo/camera/up");
+    xhttp.open("GET", "http://"+editAddr.value+"/servo/camera/up");
     xhttp.send();
     
     LastBut7 = true;
