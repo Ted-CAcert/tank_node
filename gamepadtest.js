@@ -1,6 +1,7 @@
 /*
  * Gamepad API Test
  * Written in 2013 by Ted Mielczarek <ted@mielczarek.org>
+ * Extended by <ted@convey.de> as controller for adeept rasptank 
  *
  * To the extent possible under law, the author(s) have dedicated all copyright and related and neighboring rights to this software to the public domain worldwide. This software is distributed without any warranty.
  *
