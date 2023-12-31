@@ -3,8 +3,17 @@ Controlling the adeept rasptank with node
 
 ## Ideas
 
-The browser (sometimes?) refuses to read data from non HTTPS addresses.
+The browser (usually) refuses access to the Gamepad API unless "in a secure context". Easiest way to achieve this is
+probably to fetch the index.html page using HTTPS. Problem: the certificate...
 
+[Doc about Secure Context in Mozilla's API description](https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts)
+
+Alternative: Running the index.html from a local drive, which is considered a secure contect. 
+Problems: How to do this on smartphone devices? Fetching data from the rasptank needs correct configuration to satisfy "Same Origin Policy". 
+
+[Doc about Same Origin Policy in Mozilla's API description](https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy)
+
+### Implementing HTTPS
 One option would be to set up an openSSL CA and import its root certificate into the browser as trustworthy.
 
 Another option would be a setup  like this:
