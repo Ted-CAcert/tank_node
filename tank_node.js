@@ -19,7 +19,7 @@ const server = http.createServer((req, res) => {
     console.log('Request Url: ' + req.url);
     Idx = req.url.indexOf('?');
     if (Idx >= 0) {
-        url=req.url.substr(0, Idx);
+        url=req.url.slice(0, Idx);
         params=qs.parse(req.url.slice(Idx+1));
     } else {
         url=req.url;
