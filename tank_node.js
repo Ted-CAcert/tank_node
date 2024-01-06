@@ -6,7 +6,7 @@ const mover = require('./move.js');
 const lights = require('./lights.js');
 const servo = require('./servo.js');
 
-const hostname = '0.0.0.0';
+//const hostname = '0.0.0.0';
 const port = 3000;
 
 const server = http.createServer((req, res) => {
@@ -72,7 +72,9 @@ const server = http.createServer((req, res) => {
     
 });
 
-server.listen(port, hostname, () => {
-    console.log(`Server running at http://${hostname}:${port}/`);
+// Only accept local connections.
+// Should be the same as in the nginx proxy_pass directive
+server.listen(port, "localhost", () => {
+    console.log(`Server running at http://localhost:${port}/`);
 });
-  
+
