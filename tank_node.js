@@ -5,6 +5,7 @@ const qs = require('querystring');
 const mover = require('./move.js');
 const lights = require('./lights.js');
 const servo = require('./servo.js');
+var MyConfig = require('./MyConfig.json');
 
 //const hostname = '0.0.0.0';
 const port = 3000;

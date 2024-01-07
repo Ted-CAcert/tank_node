@@ -1,0 +1,9 @@
+{
+  "frontend": {
+    "datadir": "data",
+    "controldir": "control"
+  },
+  "server": {
+    "webserver_root": "/var/www/html/rasptank"
+  }
+}
