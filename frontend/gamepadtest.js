@@ -140,6 +140,7 @@ var LastSpeed;
 function setTankSpeed(val) {
   var CurSpeed;
   
+  if (!editAddr) editAddr=document.getElementById("address");
   if (val < 0.01) {
     CurSpeed = 0;
   } else {
@@ -156,6 +157,7 @@ function setTankRot(val) {
   var CurSpeed;
   var Direction;
   
+  if (!editAddr) editAddr=document.getElementById("address");
   if (val > -0.3 && val < 0.3) {
     CurSpeed = 0;
   } else {
@@ -177,6 +179,7 @@ var LastBack;
 function setTankBack(val) {
   var CurSpeed;
   
+  if (!editAddr) editAddr=document.getElementById("address");
   if (val < 0.5) {
     CurSpeed = 0;
   } else {
@@ -193,7 +196,7 @@ var LastBut5;
 function handleKey5(key) {
   if (key && !LastBut5) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://"+editAddr.value+"/lights/on?duration=1");
+    xhttp.open("GET", "../control/lights/on?duration=1");
     xhttp.send();
     
     LastBut5 = true;
@@ -208,7 +211,7 @@ var LastBut6;
 function handleKey6(key) {
   if (key && !LastBut6) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://"+editAddr.value+"/servo/camera/down");
+    xhttp.open("GET", "../control/servo/camera/down");
     xhttp.send();
     
     LastBut6 = true;
@@ -223,7 +226,7 @@ var LastBut7;
 function handleKey7(key) {
   if (key && !LastBut7) {
     var xhttp = new XMLHttpRequest();
-    xhttp.open("GET", "http://"+editAddr.value+"/servo/camera/up");
+    xhttp.open("GET", "../control/servo/camera/up");
     xhttp.send();
     
     LastBut7 = true;

@@ -33,7 +33,7 @@ function main() {
     };
     xhttp.onprogress = function(event) {
         if (event.total > 0) {
-            console.log("Progress "+event.loaded+"/"+event.total);
+//            console.log("Progress "+event.loaded+"/"+event.total);
         }
     }
     xhttp.open("GET", "../data/image.jpg", true);
