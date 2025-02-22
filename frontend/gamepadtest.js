@@ -56,7 +56,7 @@ function addgamepad(gamepad) {
 
   if (gamepad.id.includes("Xbox One Controller")) {
     ForwardAxis.type="axis_full"; // idle position is -1, max value 1
-    ForwardAxis.idx=4;
+    ForwardAxis.idx=5;
     RightAxis.type="axis_pos"; // idle position is 0, max. value 1, only positive values are relevant
     RightAxis.idx=0;
     LeftAxis.type="axis_neg"; // idle position is 0, max value -1, only negative values are relevant
@@ -181,12 +181,12 @@ function handleActions(axes, buttons) {
             val = 0;
           }
         } else if (cfg.type === "axis_pos") {
-          if (val < 0) {
+          if (val <= 0) {
             val = 0;
           }
           // Nothing to do otherwise
         } else if (cfg.type === "axis_neg") {
-          if (val > 0) {
+          if (val >= 0) {
             val = 0;
           } else {
             val = -1*val;
@@ -198,7 +198,7 @@ function handleActions(axes, buttons) {
       } else if (cfg.type === "button") {
         val = buttons[cfg.idx];
         if (typeof(val) == "object") {
-          if (val.pressed || 'touched' in val) {
+          if (val.pressed || val.touched) {
             val = 1;
           } else {
             val = 0;
